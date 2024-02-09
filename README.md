@@ -33,15 +33,14 @@ Estos paquetes se instalan con las siguientes instrucciones:
 
 ## 2.2 Crear espacio de trabajo
 
-
-	   cd ~/ 
-	   git clone https://github.com/davidrdcr/wit.git
-    	   cd ~/wit/wit_ros_ws/
-	   catkin_make
-	   cd ~/wit/wit_ros_ws/src/scripts/
-	   sudo chmod 777 *.py
-	   echo "source ~/wit/wit_ros_ws/devel/setup.sh" >> ~/.bashrc
-	   source ~/.bashrc
+	cd ~/
+	git clone https://github.com/davidrdcr/wit.git
+	cd ~/wit/wit_ros_ws/
+	catkin_make
+	cd ~/wit/wit_ros_ws/src/scripts/
+	sudo chmod 777 *.py
+	echo "source ~/wit/wit_ros_ws/devel/setup.sh" >> ~/.bashrc
+	source ~/.bashrc
 
 ## 6. Controlador y visualización de ROS
 Verifique el número del puerto USB. No conecte el USB de la IMU primero. Ingrese `ls /dev/ttyUSB*` en el terminal y vea los dispositivos existentes. Luego inserte el USB en la computadora e ingrese `ls /dev/ttyUSB*` en el terminal para detectar el dispositivo ttyUSB adicional.
@@ -68,13 +67,20 @@ Abra tres nuevas terminales e ingrese las siguientes líneas de comando.
  - wit_imu.launch, abre el nodo controlado por IMU.
  - rviz_and_imu.launch, abre el nodo del controlador IMU y la visualización de Rviz.
 
-## 11. Instale cutecom
+## Verificación del funcionamiento con cutecom
+## 1. Instale cutecom
 
     sudo apt-get install cutecom -y
 
-## 12.  Otorgue permisos de lectura y escritura.
+## 2.  Otorgue permisos de lectura y escritura.
 
     sudo chmod 777 /dev/ttyUSB0 
 
-## 13. Verifique los datos
+## 3. Verifique los datos
 Ingrese cutecom en la terminal. Si puede encontrar información que comience con `55 51`, `55 52`, `55 53`, entonces no hay problema con los datos enviados por el módulo. Si hay datos pero no se encuentran los datos de encabezado correctos, debe verificar el valor en baudios, la configuración de velocidad en baudios, cambie a la velocidad en baudios correcta y se mostrará.
+
+## Nota
+Si se utilizan los datos del repositorio de [\[Witmotion\]](https://github.com/WITMOTION/WitStandardModbus_WT901C485/tree/main) es necesario corregir la identación de las líneas 20 y 23 del archivo **wit_modbus_ros.py**. 
+
+También es necesario reemplazarel parámetro "**default**" por "**modbus**" dentro de los archivos de la carpeta **launch**. 
+
