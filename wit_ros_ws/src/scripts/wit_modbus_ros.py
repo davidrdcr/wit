@@ -14,32 +14,24 @@ import modbus_tk
 import modbus_tk.defines as cst
 from modbus_tk import modbus_rtu
 
-# 查找 ttyUSB* 设备
+# Encuentra el dispositivo usb
 def find_ttyUSB():
-    #print('imu 默认串口为 /dev/ttyUSB0, 若识别多个串口设备, 请在 launch 文件中修改 imu 对应的串口')
 	print('The default serial port of the imu is /dev/ttyUSB0, if multiple serial port devices are identified, modify the serial port corresponding to the imu in the launch file')
 	posts = [port.device for port in serial.tools.list_ports.comports() if 'USB' in port.device]
-	print('当前电脑所连接的 {} 串口设备共 {} 个: {}'.format('USB', len(posts), posts))
 	print('There are {} {} serial port devices connected to the current PC: {}'.format(len(posts), 'USB', posts))
 
-
-        
-
-
-angularVelocity = [0, 0, 0]
-acceleration = [0, 0, 0]
-magnetometer = [0, 0, 0]
-angle_degree = [0, 0, 0]
-
+velocidadAngular = [0, 0, 0]
+aceleracion = [0, 0, 0]
+magnetometro = [0, 0, 0]
+angulos_grados = [0, 0, 0]
 
 if __name__ == "__main__":
     python_version = platform.python_version()[0]
-
     find_ttyUSB()
     rospy.init_node("imu")
     port = rospy.get_param("~port", "/dev/ttyUSB0")
     baudrate = rospy.get_param("~baud", 115200)
-    print("IMU Type: Modbus Port:%s baud:%d" %(port,baudrate))
+    print("DATOS DEL IMU: Puerto Modbus:%s Baudios:%d" %(port,baudrate))
     imu_msg = Imu()
     mag_msg = MagneticField()
     try:
@@ -77,10 +69,10 @@ if __name__ == "__main__":
 
                         v[i]=reg[i]
 
-                acceleration = [v[i] / 32768.0 * 16 * 9.8 for i in range(0, 3)]
-                angularVelocity = [v[i] / 32768.0 * 2000 * math.pi / 180 for i in range(3, 6)]
-                magnetometer = v[6:9]
-                angle_degree = [v[i] / 32768.0 * 180 for i in range(9, 12)]
+                aceleracion = [v[i] / 32768.0 * 16 * 9.8 for i in range(0, 3)]
+                velocidadAngular = [v[i] / 32768.0 * 2000 * math.pi / 180 for i in range(3, 6)]
+                magnetometro = v[6:9]
+                angulos_grados = [v[i] / 32768.0 * 180 for i in range(9, 12)]
             
                 stamp = rospy.get_rostime()
 
@@ -90,7 +82,7 @@ if __name__ == "__main__":
                 mag_msg.header.stamp = stamp
                 mag_msg.header.frame_id = "base_link"
 
-                angle_radian = [angle_degree[i] * math.pi / 180 for i in range(3)]
+                angle_radian = [angulos_grados[i] * math.pi / 180 for i in range(3)]
                 qua = quaternion_from_euler(angle_radian[0], angle_radian[1], angle_radian[2])
 
                 imu_msg.orientation.x = qua[0]
@@ -98,17 +90,17 @@ if __name__ == "__main__":
                 imu_msg.orientation.z = qua[2]
                 imu_msg.orientation.w = qua[3]
 
-                imu_msg.angular_velocity.x = angularVelocity[0]
-                imu_msg.angular_velocity.y = angularVelocity[1]
-                imu_msg.angular_velocity.z = angularVelocity[2]
+                imu_msg.angular_velocity.x = velocidadAngular[0]
+                imu_msg.angular_velocity.y = velocidadAngular[1]
+                imu_msg.angular_velocity.z = velocidadAngular[2]
 
-                imu_msg.linear_acceleration.x = acceleration[0]
-                imu_msg.linear_acceleration.y = acceleration[1]
-                imu_msg.linear_acceleration.z = acceleration[2]
+                imu_msg.linear_acceleration.x = aceleracion[0]
+                imu_msg.linear_acceleration.y = aceleracion[1]
+                imu_msg.linear_acceleration.z = aceleracion[2]
 
-                mag_msg.magnetic_field.x = magnetometer[0]
-                mag_msg.magnetic_field.y = magnetometer[1]
-                mag_msg.magnetic_field.z = magnetometer[2]
+                mag_msg.magnetic_field.x = magnetometro[0]
+                mag_msg.magnetic_field.y = magnetometro[1]
+                mag_msg.magnetic_field.z = magnetometro[2]
 
                 imu_pub.publish(imu_msg)
                 mag_pub.publish(mag_msg)
