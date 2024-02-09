@@ -36,6 +36,7 @@ Estos paquetes se instalan con las siguientes instrucciones:
 
 	   cd ~/ 
 	   git clone https://github.com/davidrdcr/wit.git
+    	   cd ~/wit/wit_ros_ws/
 	   catkin_make
 	   cd ~/wit/wit_ros_ws/src/scripts/
 	   sudo chmod 777 *.py
